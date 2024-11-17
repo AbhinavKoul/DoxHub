@@ -36,7 +36,9 @@ jobs:
           source: ./
           destination: ./_site
       - name: Create CNAME file
-        run: echo "${{ secrets.CNAME_VALUE }}" > _site/CNAME
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}/_site
+          echo "${{ secrets.CNAME_VALUE }}" > ${{ github.workspace }}/_site/CNAME
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 
