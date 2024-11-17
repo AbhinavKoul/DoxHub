@@ -24,7 +24,7 @@ jobs:
         run: pip install -r notionSnapshot/requirements.txt
       - name: Run notionSnapshot
         run: |
-          python3 notionSnapshot/notionsnapshot https://foamy-woolen-bd6.notion.site/Dox-Hub-141a04d65d0980fab219e6e2fab57215?pvs=4
+          python3 notionSnapshot/notionsnapshot https://foamy-woolen-bd6.notion.site/Dox-Hub-141a04d65d0980fab219e6e2fab57215?pvs=4 -b -d
       - name: Push to GitHub pages
         run: |
           git config --global user.name "github-actions[bot]"
