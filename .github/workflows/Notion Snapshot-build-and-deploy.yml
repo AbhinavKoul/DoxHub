@@ -1,0 +1,75 @@
+name: Snapshot, Build, and Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  snapshot-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SnapshotWorklow
+        uses: actions/checkout@v3
+        with:
+          repository: sueszli/notionSnapshot
+          path: notionSnapshot
+
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+        with:
+          path: pages_repo
+
+      - name: Install Chrome
+        run: |
+          sudo apt update && sudo apt upgrade -y
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt --fix-broken install
+          rm -rf google-chrome-stable_current_amd64.deb
+
+      - name: Install notionSnapshot dependencies
+        run: pip install -r notionSnapshot/requirements.txt
+
+      - name: Run notionSnapshot
+        run: |
+          python3 notionSnapshot/notionsnapshot --dark-mode ${{ secrets.NOTION_BASE_WEBPAGE }}
+
+      - name: Move snapshot to pages_repo
+        run: |
+          mv snapshots/dox-knowledge-base/* pages_repo/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./pages_repo
+          destination: ./_site
+
+      - name: Create CNAME file
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}/_site
+          echo "${{ secrets.CNAME_VALUE }}" > ${{ github.workspace }}/_site/CNAME
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: snapshot-and-build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
