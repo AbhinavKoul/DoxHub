@@ -1,0 +1,35 @@
+name: Publish Notion website to GitHub Pages using SnapshotWorklow
+
+on:
+  # Manual update only.
+  workflow_dispatch:
+  
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SnapshotWorklow
+        uses: actions/checkout@v3
+        with:
+          repository: sueszli/notionSnapshot
+          path: notionSnapshot
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+        with:
+          path: pages_repo
+      - name: Install notionSnapshot dependencies
+        run: pip install -r notionSnapshot/requirements.txt
+      - name: Run notionSnapshot
+        run: |
+          python3 notionSnapshot/notionSnapshot https://foamy-woolen-bd6.notion.site/Dox-Hub-141a04d65d0980fab219e6e2fab57215?pvs=4
+      - name: Push to GitHub pages
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          GIT_DEPLOY_DIR=../dist/site \
+          GIT_DEPLOY_BRANCH=gh-pages \
+          GIT_DEPLOY_REPO="https://${{ github.token }}@github.com/${{ github.repository }}.git" ./deploy.sh
+        working-directory: pages_repo
