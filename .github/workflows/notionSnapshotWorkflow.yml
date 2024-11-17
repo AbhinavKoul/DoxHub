@@ -31,7 +31,7 @@ jobs:
         run: pip install -r notionSnapshot/requirements.txt
       - name: Run notionSnapshot
         run: |
-          python3 notionSnapshot/notionsnapshot --dark-mode ${{ NOTION_BASE_WEBPAGE }}
+          python3 notionSnapshot/notionsnapshot --dark-mode ${{ secrets.NOTION_BASE_WEBPAGE }}
       - name: Push to GitHub pages
         run: |
           git config --global user.name "github-actions[bot]"
