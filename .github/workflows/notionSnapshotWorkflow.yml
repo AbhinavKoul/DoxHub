@@ -22,11 +22,11 @@ jobs:
           path: pages_repo
       - name: Install Chrome
         run: |
-        sudo apt update && sudo apt upgrade -y
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt --fix-broken install
-        rm -rf google-chrome-stable_current_amd64.deb
+          sudo apt update && sudo apt upgrade -y
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt --fix-broken install
+          rm -rf google-chrome-stable_current_amd64.deb
       - name: Install notionSnapshot dependencies
         run: pip install -r notionSnapshot/requirements.txt
       - name: Run notionSnapshot
